@@ -1,0 +1,91 @@
+plugins {
+    id 'java'
+    id "com.gradle.plugin-publish" version "0.12.0"
+    id "java-gradle-plugin"
+}
+
+version = "${project_version}"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+
+    mavenCentral()
+}
+
+dependencies {
+
+    compile group: 'org.twitter4j', name: 'twitter4j-core', version: '4.0.7'
+    compile gradleApi()
+}
+
+test {
+    useJUnitPlatform()
+}
+
+gradlePlugin {
+    plugins {
+        diluvGradle {
+            id = 'net.darkhax.tweedle'
+            implementationClass = 'net.darkhax.tweedle.TweedlePlugin'
+        }
+    }
+}
+
+pluginBundle {
+    vcsUrl = 'https://github.com/Darkhax/Tweedle'
+    description = 'Gradle plugin for sending tweets via tasks.'
+    tags = ['twitter', 'tweet', 'gradle']
+
+    plugins {
+        tweedle {
+            displayName = 'Tweedle'
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+                'Timestamp'               : System.currentTimeMillis(),
+                'Specification-Title'     : project.archivesBaseName,
+                'Specification-Vendor'    : project.vendor,
+                'Specification-Version'   : project.version,
+                'Implementation-Title'    : project.archivesBaseName,
+                'Implementation-Version'  : project.version,
+                'Implementation-Vendor'   : project.vendor,
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})"
+        ])
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    description = 'Creates a JAR containing the source code.'
+    from sourceSets.main.allSource
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    description = 'Creates a JAR containing the JavaDocs.'
+    from javadoc.destinationDir
+    archiveClassifier = 'javadoc'
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+static String getBuildNumber() {
+    return System.getenv("GITHUB_RUN_NUMBER") ?: "0"
+}
+
+static boolean isSnapshot() {
+    String ref = System.getenv("GITHUB_REF");
+    if (ref != null && ref.startsWith("refs/tags/v")) {
+        return false
+    }
+    return true
+}
