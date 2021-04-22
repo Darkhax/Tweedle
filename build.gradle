@@ -38,6 +38,7 @@ gradlePlugin {
 
 pluginBundle {
 
+    website = 'https://www.darkhax.net/'
     vcsUrl = 'https://github.com/Darkhax/Tweedle'
     description = 'Gradle plugin for sending tweets via tasks.'
     tags = ['twitter', 'tweet', 'gradle']
