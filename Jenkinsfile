@@ -14,7 +14,7 @@ pipeline {
             
                     echo 'Building project.'
                     sh 'chmod +x gradlew'
-                    sh './gradlew clean build --stacktrace --warn'
+                    sh './gradlew clean build publishPlugins --stacktrace --warn'
                 }
             }
         }
